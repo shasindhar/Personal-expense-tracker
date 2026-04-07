@@ -1,0 +1,5 @@
+{
+  "name": "Expense Tracker",
+  "description": "A modern expense tracking application with dashboard, charts, and transaction management.",
+  "requestFramePermissions": []
+}
