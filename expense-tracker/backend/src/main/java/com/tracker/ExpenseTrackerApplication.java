@@ -35,16 +35,20 @@ public class ExpenseTrackerApplication {
         };
     }
 
-    @EventListener(ApplicationReadyEvent.class)
-    public void seedDemoUser() {
-        String demoEmail = "sasi@gmail.com";
-        if (!userRepository.existsByEmail(demoEmail)) {
-            com.tracker.model.User user = new com.tracker.model.User();
-            user.setName("sasi");
-            user.setEmail(demoEmail);
-            user.setPassword(passwordEncoder.encode("password123"));
-            userRepository.save(user);
-            logger.info("Demo user '{}' created with password 'password123'", demoEmail);
-        }
+    @Bean
+    public CommandLineRunner demoUserSeeder(com.tracker.repository.UserRepository userRepository, org.springframework.security.crypto.password.PasswordEncoder passwordEncoder) {
+        return args -> {
+            String demoEmail = "sasi@gmail.com";
+            if (!userRepository.findByEmail(demoEmail).isPresent()) {
+                com.tracker.model.User user = new com.tracker.model.User();
+                user.setName("sasi");
+                user.setEmail(demoEmail);
+                user.setPassword(passwordEncoder.encode("password123"));
+                userRepository.save(user);
+                logger.info(">>> DEMO USER '{}' CREATED WITH PASSWORD 'password123' <<<", demoEmail);
+            } else {
+                logger.info(">>> DEMO USER '{}' ALREADY EXISTS <<<", demoEmail);
+            }
+        };
     }
 }

@@ -25,7 +25,7 @@ const Login = () => {
       await refresh();
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid email or password. Please try again.');
+      setError(err.friendlyMessage || 'Invalid email or password. Please try again.');
     } finally {
       setLoading(false);
     }

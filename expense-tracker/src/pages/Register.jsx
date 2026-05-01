@@ -39,7 +39,7 @@ const Register = () => {
       setSuccess(true);
       setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      setError(err.friendlyMessage || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }

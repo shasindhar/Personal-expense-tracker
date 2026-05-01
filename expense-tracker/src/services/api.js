@@ -28,15 +28,26 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    let message = 'An unexpected error occurred.';
+    
     if (error.code === 'ERR_NETWORK') {
-      console.error('Backend not reachable. Please check if the server is running.');
+      message = 'Backend not reachable. Please check if the server is running.';
+      console.error(message);
+    } else if (error.response && error.response.data && error.response.data.message) {
+      message = error.response.data.message;
     }
     
     // If 401 Unauthorized, clear token and redirect to login
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('token');
-      window.location.href = '/login';
+      // Only redirect if not already on login or register page
+      if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
+        window.location.href = '/login';
+      }
     }
+    
+    // Attach the friendly message to the error object so components can use it
+    error.friendlyMessage = message;
     
     return Promise.reject(error);
   }

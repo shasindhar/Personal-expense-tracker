@@ -56,15 +56,12 @@ public class AuthService {
     }
 
     public AuthResponse login(AuthRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Invalid email or password");
+        }
 
         var userDetails = new org.springframework.security.core.userdetails.User(
                 user.getEmail(),

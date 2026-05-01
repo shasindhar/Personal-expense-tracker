@@ -12,6 +12,13 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(org.springframework.dao.DataAccessException.class)
+    public ResponseEntity<?> handleDataAccessException(org.springframework.dao.DataAccessException ex, WebRequest request) {
+        Map<String, String> errorDetails = new HashMap<>();
+        errorDetails.put("message", "Database error: " + ex.getRootCause().getMessage());
+        return new ResponseEntity<>(errorDetails, HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
     @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
     public ResponseEntity<?> handleAuthenticationException(org.springframework.security.core.AuthenticationException ex, WebRequest request) {
         Map<String, String> errorDetails = new HashMap<>();
