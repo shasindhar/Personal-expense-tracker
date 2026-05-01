@@ -15,7 +15,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(org.springframework.dao.DataAccessException.class)
     public ResponseEntity<?> handleDataAccessException(org.springframework.dao.DataAccessException ex, WebRequest request) {
         Map<String, String> errorDetails = new HashMap<>();
-        errorDetails.put("message", "Database error: " + ex.getRootCause().getMessage());
+        Throwable rootCause = ex.getRootCause();
+        String message = (rootCause != null) ? rootCause.getMessage() : ex.getMessage();
+        errorDetails.put("message", "Database error: " + message);
         return new ResponseEntity<>(errorDetails, HttpStatus.SERVICE_UNAVAILABLE);
     }
 
