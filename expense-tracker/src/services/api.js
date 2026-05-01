@@ -31,6 +31,13 @@ api.interceptors.response.use(
     if (error.code === 'ERR_NETWORK') {
       console.error('Backend not reachable. Please check if the server is running.');
     }
+    
+    // If 401 Unauthorized, clear token and redirect to login
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    
     return Promise.reject(error);
   }
 );
