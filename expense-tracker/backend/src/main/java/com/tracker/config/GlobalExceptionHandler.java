@@ -12,6 +12,13 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<?> handleAuthenticationException(org.springframework.security.core.AuthenticationException ex, WebRequest request) {
+        Map<String, String> errorDetails = new HashMap<>();
+        errorDetails.put("message", "Invalid email or password");
+        return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
         Map<String, String> errorDetails = new HashMap<>();
