@@ -199,9 +199,14 @@ const Login = () => {
             </div>
 
             <div className="mt-6">
-              <div ref={googleBtnRef} className="w-full flex justify-center">
+              <div className="w-full flex justify-center relative min-h-[44px]">
+                <div 
+                  ref={googleBtnRef} 
+                  className={`w-full flex justify-center transition-opacity duration-300 ${googleReady ? 'opacity-100' : 'opacity-0'}`}
+                ></div>
+                
                 {!googleReady && (
-                  <div className="flex items-center gap-2 text-sm text-gray-400 py-2">
+                  <div className="absolute inset-0 flex items-center justify-center gap-2 text-sm text-gray-400 pointer-events-none">
                     <Loader2 className="w-4 h-4 animate-spin" />
                     Loading Google Sign-In...
                   </div>
