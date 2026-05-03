@@ -11,6 +11,8 @@ const Navbar = () => {
   const { clearState } = useBudget();
 
   const handleLogout = () => {
+    // Hide the page immediately to prevent flash of old content
+    document.body.style.visibility = 'hidden';
     removeToken();
     if (clearState) {
       clearState();
