@@ -13,14 +13,16 @@ public class User {
     private String email;
     
     private String password;
+    private String provider; // "local" or "google"
 
     public User() {}
 
-    public User(String id, String name, String email, String password) {
+    public User(String id, String name, String email, String password, String provider) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.provider = provider;
     }
 
     public String getId() { return id; }
@@ -31,4 +33,6 @@ public class User {
     public void setEmail(String email) { this.email = email; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+    public String getProvider() { return provider; }
+    public void setProvider(String provider) { this.provider = provider; }
 }

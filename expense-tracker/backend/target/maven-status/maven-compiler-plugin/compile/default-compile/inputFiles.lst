@@ -20,5 +20,6 @@ C:\Users\Shasindhar Ramesh\OneDrive\Desktop\expense\expense-tracker\backend\src\
 C:\Users\Shasindhar Ramesh\OneDrive\Desktop\expense\expense-tracker\backend\src\main\java\com\tracker\controller\BudgetController.java
 C:\Users\Shasindhar Ramesh\OneDrive\Desktop\expense\expense-tracker\backend\src\main\java\com\tracker\controller\ExpenseController.java
 C:\Users\Shasindhar Ramesh\OneDrive\Desktop\expense\expense-tracker\backend\src\main\java\com\tracker\dto\AuthRequest.java
+C:\Users\Shasindhar Ramesh\OneDrive\Desktop\expense\expense-tracker\backend\src\main\java\com\tracker\dto\GoogleAuthRequest.java
 C:\Users\Shasindhar Ramesh\OneDrive\Desktop\expense\expense-tracker\backend\src\main\java\com\tracker\dto\AuthResponse.java
 C:\Users\Shasindhar Ramesh\OneDrive\Desktop\expense\expense-tracker\backend\src\main\java\com\tracker\service\BudgetLimitService.java
