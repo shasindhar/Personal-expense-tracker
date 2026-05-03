@@ -48,8 +48,10 @@ const Login = () => {
   }, [refresh, navigate]);
 
   useEffect(() => {
+    let intervalId;
+    let timeoutId;
+
     const initializeGoogleButton = () => {
-      /* global google */
       if (window.google) {
         google.accounts.id.initialize({
           client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
@@ -59,20 +61,33 @@ const Login = () => {
           document.getElementById('googleSignInBtn'),
           { theme: 'outline', size: 'large', width: 350 }
         );
+        
+        // Success! Clear both polling and timeout
+        if (intervalId) clearInterval(intervalId);
+        if (timeoutId) clearTimeout(timeoutId);
       }
     };
 
-    if (window.google) {
-      // Script already loaded (e.g. navigating back to this page)
-      initializeGoogleButton();
-    } else {
-      // Script still loading — attach a listener to the script tag
-      const scriptTag = document.querySelector('script[src*="accounts.google.com/gsi/client"]');
-      if (scriptTag) {
-        scriptTag.addEventListener('load', initializeGoogleButton);
-        return () => scriptTag.removeEventListener('load', initializeGoogleButton);
-      }
+    // 1. Try immediately
+    initializeGoogleButton();
+
+    // 2. Poll every 100ms for up to 5 seconds (robust fallback)
+    intervalId = setInterval(initializeGoogleButton, 100);
+    timeoutId = setTimeout(() => {
+      clearInterval(intervalId);
+    }, 5000);
+
+    // 3. Also listen for the load event just in case
+    const scriptTag = document.querySelector('script[src*="accounts.google.com/gsi/client"]');
+    if (scriptTag) {
+      scriptTag.addEventListener('load', initializeGoogleButton);
     }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+      if (timeoutId) clearTimeout(timeoutId);
+      if (scriptTag) scriptTag.removeEventListener('load', initializeGoogleButton);
+    };
   }, [handleGoogleLogin]);
 
   return (
