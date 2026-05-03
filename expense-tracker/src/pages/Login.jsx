@@ -61,27 +61,17 @@ const Login = () => {
           document.getElementById('googleSignInBtn'),
           { theme: 'outline', size: 'large', width: 350 }
         );
-        
-        // Success! Clear both polling and timeout
         if (intervalId) clearInterval(intervalId);
         if (timeoutId) clearTimeout(timeoutId);
       }
     };
 
-    // 1. Try immediately
     initializeGoogleButton();
-
-    // 2. Poll every 100ms for up to 5 seconds (robust fallback)
     intervalId = setInterval(initializeGoogleButton, 100);
-    timeoutId = setTimeout(() => {
-      clearInterval(intervalId);
-    }, 5000);
+    timeoutId = setTimeout(() => clearInterval(intervalId), 5000);
 
-    // 3. Also listen for the load event just in case
     const scriptTag = document.querySelector('script[src*="accounts.google.com/gsi/client"]');
-    if (scriptTag) {
-      scriptTag.addEventListener('load', initializeGoogleButton);
-    }
+    if (scriptTag) scriptTag.addEventListener('load', initializeGoogleButton);
 
     return () => {
       if (intervalId) clearInterval(intervalId);

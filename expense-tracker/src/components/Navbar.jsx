@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { LogOut, LayoutDashboard, PlusCircle, Wallet, PiggyBank, Target, Menu, X } from 'lucide-react';
 import { removeToken, isAuthenticated } from '../utils/auth';
 import { useBudget } from '../context/BudgetContext';

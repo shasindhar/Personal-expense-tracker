@@ -7,7 +7,17 @@ export const getToken = () => {
 };
 
 export const isAuthenticated = () => {
-  return !!getToken();
+  const token = getToken();
+  if (!token) return false;
+  
+  try {
+    const payload = token.split('.')[1];
+    const decoded = JSON.parse(atob(payload));
+    const isExpired = decoded.exp * 1000 < Date.now();
+    return !isExpired;
+  } catch (e) {
+    return false;
+  }
 };
 
 export const setUserData = (userData) => {

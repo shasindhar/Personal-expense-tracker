@@ -7,7 +7,6 @@ import Dashboard from './pages/Dashboard';
 import Savings from './pages/Savings';
 import Budget from './pages/Budget';
 import AddExpense from './pages/AddExpense';
-import { isAuthenticated } from './utils/auth';
 import ProtectedRoute from './components/ProtectedRoute';
 import { BudgetProvider } from './context/BudgetContext';
 import ToastNotification from './components/ToastNotification';
