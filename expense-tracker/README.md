@@ -2,6 +2,8 @@
 
 A full-stack personal finance management application built with **React + Vite** (frontend) and **Spring Boot + MongoDB** (backend). Track income, expenses, savings, and set per-category budget limits — all secured with JWT authentication.
 
+🚀 **Live Demo:** [https://personal-expense-tracker-production-4579.up.railway.app](https://personal-expense-tracker-production-4579.up.railway.app)
+
 ---
 
 ## 📋 Table of Contents
@@ -33,7 +35,7 @@ A full-stack personal finance management application built with **React + Vite**
 
 ### 🔐 Authentication
 - **Register** — Create a new account with name, email, and password
-- **Login** — Authenticate with email and password; receive a JWT token
+- **Login** — Authenticate with email and password or use **Google Sign-In**; receive a JWT token
 - **JWT-protected routes** — All API endpoints require a valid Bearer token
 - **Auto-logout** — Token stored in `localStorage`; cleared on logout
 
@@ -190,7 +192,7 @@ Visit **[http://localhost:3000](http://localhost:3000)** in your browser.
 
 ## 🌱 Environment Variables
 
-Copy `.env.example` to `.env` and fill in your values:
+Copy `.env.example` to `.env` and fill in your values. For the frontend, create a `.env` in the root:
 
 ```bash
 cp .env.example .env
@@ -198,11 +200,16 @@ cp .env.example .env
 
 | Variable                  | Description                              | Default                          |
 |---------------------------|------------------------------------------|----------------------------------|
+| `VITE_GOOGLE_CLIENT_ID`   | Google OAuth Client ID for sign in       | (your google client id)          |
+| `VITE_API_URL`            | Backend API URL                          | `http://localhost:8080/api`      |
+
+For the backend, configure `backend/src/main/resources/application.properties` with:
+| Variable                  | Description                              | Default                          |
+|---------------------------|------------------------------------------|----------------------------------|
 | `MONGODB_URI`             | MongoDB connection string                | `mongodb://localhost:27017/expensedb` |
 | `JWT_SECRET`              | Secret key for signing JWT tokens        | (set a strong random string)     |
 | `JWT_EXPIRATION`          | Token expiry in milliseconds             | `86400000` (24 hours)            |
-
-These are configured in `backend/src/main/resources/application.properties`.
+| `google.client.id`        | Google OAuth Client ID for verification  | (your google client id)          |
 
 ---
 
@@ -250,6 +257,6 @@ npm run build
 
 ## 💡 Notes
 
-- **Offline / Demo mode** — If the backend is not running, the app automatically falls back to mock data so the UI remains usable for demonstration.
 - **Budget limits are per-user** — Each account has its own independent budget limits stored in MongoDB; no defaults are pre-assigned to new users.
 - **All monetary values are in Indian Rupees (₹).**
+- **Production Ready** — The application relies entirely on the live backend and does not contain any mock data or fallback modes.
