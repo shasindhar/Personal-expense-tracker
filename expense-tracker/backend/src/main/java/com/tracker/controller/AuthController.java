@@ -2,6 +2,7 @@ package com.tracker.controller;
 
 import com.tracker.dto.AuthRequest;
 import com.tracker.dto.AuthResponse;
+import com.tracker.dto.GoogleAuthRequest;
 import com.tracker.dto.RegisterRequest;
 import com.tracker.service.AuthService;
 import jakarta.validation.Valid;
@@ -32,5 +33,15 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    @PostMapping("/google")
+    public ResponseEntity<AuthResponse> googleLogin(@Valid @RequestBody GoogleAuthRequest request) throws Exception {
+        return ResponseEntity.ok(authService.googleLogin(request.getToken()));
+    }
+
+    @org.springframework.web.bind.annotation.GetMapping("/health")
+    public ResponseEntity<String> health() {
+        return ResponseEntity.ok("OK");
     }
 }
