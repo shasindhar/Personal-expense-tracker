@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { IndianRupee, TrendingUp, Calendar, Loader2, AlertCircle, Plus, Wallet, PiggyBank, Target, AlertTriangle, AlertOctagon, CheckCircle } from 'lucide-react';
+import { IndianRupee, TrendingUp, Calendar, Loader2, AlertCircle, Plus, Wallet, PiggyBank, Target, AlertTriangle, AlertOctagon, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import ExpenseChart from '../components/ExpenseChart';
@@ -11,14 +11,23 @@ const Dashboard = () => {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [filterCategory, setFilterCategory] = useState('All Categories');
+  const [openCategories, setOpenCategories] = useState({});
   const { budgets, spending } = useBudget();
   const user = getUser();
 
-  const categories = ['All Categories', ...new Set(expenses.map(e => e.category))];
-  const filteredExpenses = filterCategory === 'All Categories' 
-    ? expenses 
-    : expenses.filter(e => e.category === filterCategory);
+  const groupedExpenses = expenses.reduce((acc, exp) => {
+    const cat = exp.category || 'Uncategorized';
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(exp);
+    return acc;
+  }, {});
+
+  const toggleCategory = (category) => {
+    setOpenCategories(prev => ({
+      ...prev,
+      [category]: !prev[category]
+    }));
+  };
 
   const fetchExpenses = async () => {
     try {
@@ -260,21 +269,48 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Table Section */}
+      {/* Transactions Section */}
       <div>
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-bold text-gray-900">Recent Transactions</h3>
-          <select
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-            className="border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500 py-1.5 pl-3 pr-8"
-          >
-            {categories.map(category => (
-              <option key={category} value={category}>{category}</option>
-            ))}
-          </select>
-        </div>
-        <ExpenseTable expenses={filteredExpenses} onDelete={handleDelete} />
+        <h3 className="text-lg font-bold text-gray-900 mb-6">Transactions</h3>
+        
+        {Object.keys(groupedExpenses).length === 0 ? (
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center text-gray-500 italic">
+            No transactions found.
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {Object.entries(groupedExpenses).map(([category, categoryExpenses]) => {
+              const isOpen = openCategories[category];
+              const categoryTotal = categoryExpenses.reduce((sum, exp) => sum + parseFloat(exp.amount), 0);
+              
+              return (
+                <div key={category} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                  <button
+                    onClick={() => toggleCategory(category)}
+                    className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="font-semibold text-gray-800">{category}</span>
+                      <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full font-medium">
+                        {categoryExpenses.length} entries
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="font-semibold text-gray-700">₹{categoryTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                      {isOpen ? <ChevronUp className="w-5 h-5 text-gray-500" /> : <ChevronDown className="w-5 h-5 text-gray-500" />}
+                    </div>
+                  </button>
+                  
+                  {isOpen && (
+                    <div className="p-0 border-t border-gray-200">
+                      <ExpenseTable expenses={categoryExpenses} onDelete={handleDelete} />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
