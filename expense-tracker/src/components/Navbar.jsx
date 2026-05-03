@@ -16,7 +16,7 @@ const Navbar = () => {
     if (clearState) {
       clearState();
     }
-    navigate('/login');
+    window.location.href = '/login';
   };
 
   if (!isAuthenticated()) return null;
