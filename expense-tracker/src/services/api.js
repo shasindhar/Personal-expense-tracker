@@ -8,39 +8,6 @@ const api = axios.create({
   },
 });
 
-// Mock data for demonstration when backend is not connected
-const MOCK_EXPENSES = [
-  { id: '1', title: 'Monthly Salary', amount: 5000, category: 'Salary', type: 'income', date: '2024-03-01' },
-  { id: '2', title: 'Freelance Project', amount: 1200, category: 'Salary', type: 'income', date: '2024-03-15' },
-  { id: '3', title: 'Monthly Rent', amount: 1200, category: 'Bills & Utilities', type: 'expense', date: '2024-03-01', notes: 'Main apartment' },
-  { id: '4', title: 'Grocery Run', amount: 85.50, category: 'Food & Dining', type: 'expense', date: '2024-03-05', notes: 'Weekly groceries' },
-  { id: '5', title: 'Netflix Subscription', amount: 15.99, category: 'Entertainment', type: 'expense', date: '2024-03-07' },
-  { id: '6', title: 'Gas Station', amount: 45.00, category: 'Transportation', type: 'expense', date: '2024-03-10' },
-  { id: '7', title: 'Dinner with Friends', amount: 120.00, category: 'Food & Dining', type: 'expense', date: '2024-03-12' },
-  { id: '8', title: 'Gym Membership', amount: 50.00, category: 'Health', type: 'expense', date: '2024-03-02' },
-];
-
-// No predefined budgets — each user sets their own unique limits
-const MOCK_BUDGETS = [];
-
-// In-memory mock store for demo mutations
-let mockBudgets = [...MOCK_BUDGETS];
-let mockExpenses = [...MOCK_EXPENSES];
-
-// Local helper to get current month spending for mocks
-const getMockSpending = () => {
-  const now = new Date();
-  const currMonth = now.getMonth();
-  const currYear = now.getFullYear();
-
-  return mockExpenses.reduce((acc, exp) => {
-    const d = new Date(exp.date);
-    if (exp.type === 'expense' && d.getMonth() === currMonth && d.getFullYear() === currYear) {
-      acc[exp.category] = (acc[exp.category] || 0) + parseFloat(exp.amount);
-    }
-    return acc;
-  }, {});
-};
 
 // Add a request interceptor to attach the JWT token
 api.interceptors.request.use(
