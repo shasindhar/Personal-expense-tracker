@@ -40,8 +40,4 @@ public class AuthController {
         return ResponseEntity.ok(authService.googleLogin(request.getToken()));
     }
 
-    @org.springframework.web.bind.annotation.GetMapping("/health")
-    public ResponseEntity<String> health() {
-        return ResponseEntity.ok("OK");
-    }
 }
