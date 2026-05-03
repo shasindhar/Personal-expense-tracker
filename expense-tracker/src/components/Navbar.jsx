@@ -5,7 +5,6 @@ import { removeToken, isAuthenticated } from '../utils/auth';
 import { useBudget } from '../context/BudgetContext';
 
 const Navbar = () => {
-  const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
