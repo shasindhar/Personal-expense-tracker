@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Wallet, AlertCircle, Loader2 } from 'lucide-react';
 import api from '../services/api';
@@ -10,8 +10,11 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleReady, setGoogleReady] = useState(false);
   const navigate = useNavigate();
   const { refresh } = useBudget();
+  const googleBtnRef = useRef(null);
+  const googleInitialized = useRef(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,7 +24,7 @@ const Login = () => {
     try {
       const response = await api.post('/auth/login', { email, password });
       setToken(response.data.token);
-      setUserData({ name: email.split('@')[0], email }); // Fallback name to email prefix
+      setUserData({ name: email.split('@')[0], email });
       await refresh();
       navigate('/dashboard');
     } catch (err) {
@@ -31,7 +34,9 @@ const Login = () => {
     }
   };
 
-  const handleGoogleLogin = useCallback(async (response) => {
+  // Google login handler — stable ref so useEffect never re-runs
+  const handleGoogleLoginRef = useRef(null);
+  handleGoogleLoginRef.current = async (response) => {
     setLoading(true);
     setError('');
     try {
@@ -45,40 +50,55 @@ const Login = () => {
     } finally {
       setLoading(false);
     }
-  }, [refresh, navigate]);
+  };
 
   useEffect(() => {
     let intervalId;
     let timeoutId;
 
-    const initializeGoogleButton = () => {
-      if (window.google) {
-        google.accounts.id.initialize({
+    const renderGoogleButton = () => {
+      if (!window.google || !googleBtnRef.current || googleInitialized.current) return;
+
+      try {
+        window.google.accounts.id.initialize({
           client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-          callback: handleGoogleLogin,
+          callback: (resp) => handleGoogleLoginRef.current(resp),
         });
-        google.accounts.id.renderButton(
-          document.getElementById('googleSignInBtn'),
-          { theme: 'outline', size: 'large', width: 350 }
-        );
+        window.google.accounts.id.renderButton(googleBtnRef.current, {
+          theme: 'outline',
+          size: 'large',
+          width: 350,
+        });
+        googleInitialized.current = true;
+        setGoogleReady(true);
         if (intervalId) clearInterval(intervalId);
         if (timeoutId) clearTimeout(timeoutId);
+      } catch (err) {
+        console.error('Google button init error:', err);
       }
     };
 
-    initializeGoogleButton();
-    intervalId = setInterval(initializeGoogleButton, 100);
-    timeoutId = setTimeout(() => clearInterval(intervalId), 5000);
+    // Load Google script dynamically if not already present
+    const existingScript = document.querySelector('script[src*="accounts.google.com/gsi/client"]');
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.onload = renderGoogleButton;
+      document.head.appendChild(script);
+    }
 
-    const scriptTag = document.querySelector('script[src*="accounts.google.com/gsi/client"]');
-    if (scriptTag) scriptTag.addEventListener('load', initializeGoogleButton);
+    // Poll for google object (handles both fresh load and cached script)
+    renderGoogleButton();
+    intervalId = setInterval(renderGoogleButton, 200);
+    timeoutId = setTimeout(() => clearInterval(intervalId), 10000);
 
     return () => {
       if (intervalId) clearInterval(intervalId);
       if (timeoutId) clearTimeout(timeoutId);
-      if (scriptTag) scriptTag.removeEventListener('load', initializeGoogleButton);
+      googleInitialized.current = false;
     };
-  }, [handleGoogleLogin]);
+  }, []); // Empty deps — never re-runs, uses ref for callback
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -179,7 +199,14 @@ const Login = () => {
             </div>
 
             <div className="mt-6">
-              <div id="googleSignInBtn" className="w-full flex justify-center"></div>
+              <div ref={googleBtnRef} className="w-full flex justify-center">
+                {!googleReady && (
+                  <div className="flex items-center gap-2 text-sm text-gray-400 py-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Loading Google Sign-In...
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

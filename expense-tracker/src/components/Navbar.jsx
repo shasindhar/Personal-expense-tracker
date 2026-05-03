@@ -11,8 +11,10 @@ const Navbar = () => {
   const { clearState } = useBudget();
 
   const handleLogout = () => {
-    // Hide the page immediately to prevent flash of old content
-    document.body.style.visibility = 'hidden';
+    // Cover the screen with a white overlay to prevent any flash
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#f9fafb;z-index:99999';
+    document.body.appendChild(overlay);
     removeToken();
     if (clearState) {
       clearState();
