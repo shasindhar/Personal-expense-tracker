@@ -11,8 +11,14 @@ const Dashboard = () => {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [filterCategory, setFilterCategory] = useState('All Categories');
   const { budgets, spending } = useBudget();
   const user = getUser();
+
+  const categories = ['All Categories', ...new Set(expenses.map(e => e.category))];
+  const filteredExpenses = filterCategory === 'All Categories' 
+    ? expenses 
+    : expenses.filter(e => e.category === filterCategory);
 
   const fetchExpenses = async () => {
     try {
@@ -256,8 +262,19 @@ const Dashboard = () => {
 
       {/* Table Section */}
       <div>
-        <h3 className="text-lg font-bold text-gray-900 mb-6">Recent Transactions</h3>
-        <ExpenseTable expenses={expenses} onDelete={handleDelete} />
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-bold text-gray-900">Recent Transactions</h3>
+          <select
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+            className="border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500 py-1.5 pl-3 pr-8"
+          >
+            {categories.map(category => (
+              <option key={category} value={category}>{category}</option>
+            ))}
+          </select>
+        </div>
+        <ExpenseTable expenses={filteredExpenses} onDelete={handleDelete} />
       </div>
     </div>
   );
